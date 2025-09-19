@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model links {
+  slug      String    @id(map: "links_pk") @db.VarChar
+  url       String    @db.VarChar
+  expiresat DateTime? @db.Date
+  visits    Int?
+  id        Int       @unique(map: "links_unique") @default(autoincrement())
+}
