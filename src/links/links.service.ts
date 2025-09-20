@@ -57,7 +57,7 @@ export class LinksService {
 
   async findAll(query: { limit?: number, offset?: number, search?: string }) {
     try {
-      const { limit = 10, offset = 0, search } = query;
+      let { limit = 10, offset = 0, search } = query;
 
       const findManyOptions: any = {};
       const whereClause: any = {};
@@ -73,12 +73,11 @@ export class LinksService {
         findManyOptions.where = whereClause;
       }
 
-      if (limit !== undefined) {
-        findManyOptions.take = Number(limit);
-      }
-      if (offset !== undefined) {
-        findManyOptions.skip = Number(offset);
-      }
+      limit = Number(limit) || 10;
+      findManyOptions.take = Number(limit);
+
+      offset = Number(offset) || 0;
+      findManyOptions.skip = Number(offset);
 
       const [items, total] = await this.prisma.$transaction([
         this.prisma.links.findMany(findManyOptions),
@@ -154,6 +153,19 @@ export class LinksService {
     } catch (e: any) {
       console.error(e);
       throw e;
+    }
+  }
+
+  async health() {
+    let health = false;
+    try {
+      await this.prisma.links.findMany({ take: 1, skip: 0 });
+      health = true;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    } finally {
+      return health;
     }
   }
 }
