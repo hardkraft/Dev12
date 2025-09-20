@@ -13,7 +13,6 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(
-      // @ts-expect-error
       new FastifyAdapter(),
     );
 
@@ -60,7 +59,7 @@ describe('AppController (e2e)', () => {
 
     it('POST /links - should create a link with auto-generated slug', () => {
       const linkData = {
-        url: 'https://google.com',
+        url: 'https://google.com/test',
         expiresAt: '2025-12-31T23:59:59.000Z',
       };
 
@@ -71,7 +70,7 @@ describe('AppController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toHaveProperty('slug');
           expect(res.body.slug).toHaveLength(10);
-          expect(res.body).toHaveProperty('url', 'https://google.com');
+          expect(res.body).toHaveProperty('url', 'https://google.com/test');
           expect(res.body).toHaveProperty('visits', 0);
         });
     });
@@ -79,7 +78,7 @@ describe('AppController (e2e)', () => {
     it('POST /links - should create a link without expiration', () => {
       const linkData = {
         url: 'https://github.com',
-        slug: `github123-${Date.now()}`,
+        slug: `testgithub123-${Date.now()}`,
       };
 
       return request(app.getHttpServer())
@@ -88,7 +87,7 @@ describe('AppController (e2e)', () => {
         .expect(201)
         .expect((res) => {
           expect(res.body).toHaveProperty('slug', linkData.slug);
-          expect(res.body).toHaveProperty('url', 'https://github.com');
+          expect(res.body).toHaveProperty('url', linkData.url);
           expect(res.body.expiresat).toBeNull();
         });
     });

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsUrl, MinLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { Type } from 'class-transformer';
 export class LinkDto {
 	@IsNotEmpty()
@@ -8,6 +8,7 @@ export class LinkDto {
 	@IsOptional()
 	@IsString()
 	@MinLength(6, { message: 'Slug must be at least 6 characters long if provided.' })
+	@MaxLength(30, { message: 'Slug must be at most 30 characters long if provided.' })
 	slug?: string;
 
 	@IsOptional()

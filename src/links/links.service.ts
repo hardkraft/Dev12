@@ -22,9 +22,6 @@ export class LinksService {
         throw new BadRequestException('Invalid URL format. URL must start with http:// or https://');
       }
       let slug = createLinkDto.slug;
-      if (slug && (slug.length < 6 || slug.length > 100)) {
-        throw new BadRequestException('Slug needs to be null or at least 6 characters and at most 100 characters long.');
-      }
       // create slug if doesn't exist
       if (!slug) {
         slug = this.generateSlug(10);

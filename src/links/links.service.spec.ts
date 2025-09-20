@@ -113,17 +113,6 @@ describe('LinksService', () => {
       );
     });
 
-    it('should throw BadRequestException for slug shorter than 6 characters', async () => {
-      const createLinkDto = {
-        url: 'https://example.com',
-        slug: 'abc',
-      };
-
-      await expect(service.create(createLinkDto)).rejects.toThrow(
-        'Slug needs to be null or at least 6 characters and at most 100 characters long.'
-      );
-    });
-
     it('should throw BadRequestException for past expiration date', async () => {
       const createLinkDto = {
         url: 'https://example.com',
