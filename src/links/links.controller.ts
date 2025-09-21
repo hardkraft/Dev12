@@ -1,14 +1,19 @@
-import { Controller, Get, Post, Body, Param, HttpStatus, Res, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, HttpStatus, Res, Req, Query } from '@nestjs/common';
 import { LinksService } from './links.service';
 import { LinkDto } from './dto/link.dto';
+import { IdempotencyHook } from './IdempotencyCreateHook';
 
 @Controller('links')
 export class LinksController {
-  constructor(private readonly linksService: LinksService) { }
+  constructor(private readonly linksService: LinksService, private readonly idempotencyHook: IdempotencyHook) { }
 
   @Post()
-  create(@Body() createLinkDto: LinkDto) {
-    return this.linksService.create(createLinkDto);
+  async create(@Req() req, @Res({ passthrough: true }) res, @Body() createLinkDto: LinkDto) {
+    const retrieved = await this.idempotencyHook.handleIdempotencyCreate(req, res);
+    // create new link only if not found in cache
+    if (retrieved === false) {
+      return this.linksService.create(createLinkDto);
+    }
   }
 
   @Get()
@@ -20,6 +25,7 @@ export class LinksController {
 
   @Get(':slug')
   async findOne(@Res({ passthrough: true }) res, @Param('slug') slug: string) {
+    // technically not idempotent since visits are increased
     const url = await this.linksService.findOne(slug);
     res.status(HttpStatus.FOUND).redirect(url);
   }
