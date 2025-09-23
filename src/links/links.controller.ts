@@ -24,7 +24,7 @@ export class LinksController {
   }
 
   @Get(':slug')
-  async findOne(@Res({ passthrough: true }) res, @Param('slug') slug: string) {
+  async findOne(@Res() res, @Param('slug') slug: string) {
     // technically not idempotent since visits are increased
     const url = await this.linksService.findOne(slug);
     res.status(HttpStatus.FOUND).redirect(url);
